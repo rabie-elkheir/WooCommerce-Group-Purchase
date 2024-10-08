@@ -1,18 +1,6 @@
 <?php
 
 /**
- * The plugin bootstrap file
- *
- * This file is read by WordPress to generate the plugin information in the plugin
- * admin area. This file also includes all of the dependencies used by the plugin,
- * registers the activation and deactivation functions, and defines a function
- * that starts the plugin.
- *
- * @link              https://github.com/rabie-elkheir
- * @since             1.0.0
- * @package           Woocommerce_Group_Purchase
- *
- * @wordpress-plugin
  * Plugin Name:       WooCommerce Group Purchase
  * Plugin URI:        https://github.com/rabie-elkheir/WooCommerce-Group-Purchase
  * Description:       WooCommerce Group Purchase is a simple plugin that allows store owners to offer special discounts to customers when they participate in group purchases. 
@@ -23,6 +11,8 @@
  * License URI:       http://www.gnu.org/licenses/gpl-2.0.txt
  * Text Domain:       woocommerce-group-purchase
  * Domain Path:       /languages
+ * GitHub Plugin URI: https://github.com/rabie-elkheir/WooCommerce-Group-Purchase
+ * GitHub Branch:     main
  */
 
 // If this file is called directly, abort.
