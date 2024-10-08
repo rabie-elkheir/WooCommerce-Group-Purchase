@@ -26,7 +26,7 @@
  */
 
 // If this file is called directly, abort.
-if ( ! defined( 'WPINC' ) ) {
+if (! defined('WPINC')) {
 	die;
 }
 
@@ -35,14 +35,15 @@ if ( ! defined( 'WPINC' ) ) {
  * Start at version 1.0.0 and use SemVer - https://semver.org
  * Rename this for your plugin and update it as you release new versions.
  */
-define( 'WOOCOMMERCE_GROUP_PURCHASE_VERSION', '1.0.0' );
+define('WOOCOMMERCE_GROUP_PURCHASE_VERSION', '1.0.0');
 
 /**
  * The code that runs during plugin activation.
  * This action is documented in includes/class-woocommerce-group-purchase-activator.php
  */
-function activate_woocommerce_group_purchase() {
-	require_once plugin_dir_path( __FILE__ ) . 'includes/class-woocommerce-group-purchase-activator.php';
+function activate_woocommerce_group_purchase()
+{
+	require_once plugin_dir_path(__FILE__) . 'includes/class-woocommerce-group-purchase-activator.php';
 	Woocommerce_Group_Purchase_Activator::activate();
 }
 
@@ -50,19 +51,25 @@ function activate_woocommerce_group_purchase() {
  * The code that runs during plugin deactivation.
  * This action is documented in includes/class-woocommerce-group-purchase-deactivator.php
  */
-function deactivate_woocommerce_group_purchase() {
-	require_once plugin_dir_path( __FILE__ ) . 'includes/class-woocommerce-group-purchase-deactivator.php';
+function deactivate_woocommerce_group_purchase()
+{
+	require_once plugin_dir_path(__FILE__) . 'includes/class-woocommerce-group-purchase-deactivator.php';
 	Woocommerce_Group_Purchase_Deactivator::deactivate();
 }
 
-register_activation_hook( __FILE__, 'activate_woocommerce_group_purchase' );
-register_deactivation_hook( __FILE__, 'deactivate_woocommerce_group_purchase' );
+register_activation_hook(__FILE__, 'activate_woocommerce_group_purchase');
+register_deactivation_hook(__FILE__, 'deactivate_woocommerce_group_purchase');
 
 /**
  * The core plugin class that is used to define internationalization,
  * admin-specific hooks, and public-facing site hooks.
  */
-require plugin_dir_path( __FILE__ ) . 'includes/class-woocommerce-group-purchase.php';
+require plugin_dir_path(__FILE__) . 'includes/class-woocommerce-group-purchase.php';
+
+
+// إضافة ملف إعدادات شراء المجموعة
+require_once plugin_dir_path(__FILE__) . 'includes/group-purchase-settings.php';
+
 
 /**
  * Begins execution of the plugin.
@@ -73,10 +80,10 @@ require plugin_dir_path( __FILE__ ) . 'includes/class-woocommerce-group-purchase
  *
  * @since    1.0.0
  */
-function run_woocommerce_group_purchase() {
+function run_woocommerce_group_purchase()
+{
 
 	$plugin = new Woocommerce_Group_Purchase();
 	$plugin->run();
-
 }
 run_woocommerce_group_purchase();
