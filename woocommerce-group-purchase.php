@@ -1,162 +1,79 @@
 <?php
 
-// إذا تم استدعاء هذا الملف مباشرة، امنع الوصول
+/**
+ * Plugin Name:       WooCommerce Group Purchase
+ * Plugin URI:        https://github.com/rabie-elkheir/WooCommerce-Group-Purchase
+ * Description:       WooCommerce Group Purchase is a simple plugin that allows store owners to offer special discounts to customers when they participate in group purchases. 
+ * Version:           1.0.0
+ * Author:            Rabie Alkheir
+ * Author URI:        https://github.com/rabie-elkheir/
+ * License:           GPL-2.0+
+ * License URI:       http://www.gnu.org/licenses/gpl-2.0.txt
+ * Text Domain:       woocommerce-group-purchase
+ * Domain Path:       /languages
+ * GitHub Plugin URI: https://github.com/rabie-elkheir/WooCommerce-Group-Purchase
+ * GitHub Branch:     main
+ */
+
+// If this file is called directly, abort.
 if (! defined('WPINC')) {
 	die;
 }
 
 /**
- * إضافة إعدادات شراء المجموعة إلى صفحة المنتج في WooCommerce
+ * Currently plugin version.
+ * Start at version 1.0.0 and use SemVer - https://semver.org
+ * Rename this for your plugin and update it as you release new versions.
  */
-add_action('woocommerce_product_options_general_product_data', 'woocommerce_group_purchase_options');
-function woocommerce_group_purchase_options()
+define('WOOCOMMERCE_GROUP_PURCHASE_VERSION', '1.0.0');
+
+/**
+ * The code that runs during plugin activation.
+ * This action is documented in includes/class-woocommerce-group-purchase-activator.php
+ */
+function activate_woocommerce_group_purchase()
 {
-	// إضافة خانة تحديد لتمكين شراء المجموعة
-	woocommerce_wp_checkbox(array(
-		'id' => 'enable_group_purchase',
-		'label' => __('تمكين شراء المجموعة', 'woocommerce-group-purchase'),
-		'description' => __('السماح للعملاء بشراء هذا المنتج كمجموعة.', 'woocommerce-group-purchase')
-	));
-
-	// إضافة حقل إدخال لتحديد حجم المجموعة
-	woocommerce_wp_text_input(array(
-		'id' => 'group_purchase_size',
-		'label' => __('حجم المجموعة', 'woocommerce-group-purchase'),
-		'description' => __('عدد الأشخاص المطلوبين لتفعيل شراء المجموعة.', 'woocommerce-group-purchase'),
-		'type' => 'number',
-		'custom_attributes' => array(
-			'min' => '1',
-			'step' => '1'
-		)
-	));
-
-	// إضافة حقل إدخال للخصم (مبلغ ثابت)
-	woocommerce_wp_text_input(array(
-		'id' => 'group_purchase_discount',
-		'label' => __('خصم المجموعة (مبلغ)', 'woocommerce-group-purchase'),
-		'description' => __('مبلغ الخصم الثابت على شراء المجموعة.', 'woocommerce-group-purchase'),
-		'type' => 'number',
-		'custom_attributes' => array(
-			'min' => '0',
-			'step' => '0.01'
-		)
-	));
-
-	// إضافة حقل إدخال لتحديد وقت الشراء (اختياري)
-	woocommerce_wp_text_input(array(
-		'id' => 'group_purchase_time_limit',
-		'label' => __('مدة شراء المجموعة (ساعات)', 'woocommerce-group-purchase'),
-		'description' => __('عدد الساعات التي يكون الشراء متاحًا خلالها (اختياري).', 'woocommerce-group-purchase'),
-		'type' => 'number',
-		'custom_attributes' => array(
-			'min' => '0',
-			'step' => '1'
-		)
-	));
+	require_once plugin_dir_path(__FILE__) . 'includes/class-woocommerce-group-purchase-activator.php';
+	Woocommerce_Group_Purchase_Activator::activate();
 }
 
 /**
- * حفظ الحقول عند حفظ المنتج
+ * The code that runs during plugin deactivation.
+ * This action is documented in includes/class-woocommerce-group-purchase-deactivator.php
  */
-add_action('woocommerce_process_product_meta', 'save_group_purchase_fields');
-function save_group_purchase_fields($post_id)
+function deactivate_woocommerce_group_purchase()
 {
-	// حفظ خيار تمكين شراء المجموعة
-	$enable_group_purchase = isset($_POST['enable_group_purchase']) ? 'yes' : 'no';
-	update_post_meta($post_id, 'enable_group_purchase', $enable_group_purchase);
-
-	// حفظ حجم المجموعة
-	if (isset($_POST['group_purchase_size'])) {
-		update_post_meta($post_id, 'group_purchase_size', sanitize_text_field($_POST['group_purchase_size']));
-	}
-
-	// حفظ خصم المجموعة (مبلغ ثابت)
-	if (isset($_POST['group_purchase_discount'])) {
-		update_post_meta($post_id, 'group_purchase_discount', sanitize_text_field($_POST['group_purchase_discount']));
-	}
-
-	// حفظ مدة شراء المجموعة
-	if (isset($_POST['group_purchase_time_limit'])) {
-		update_post_meta($post_id, 'group_purchase_time_limit', sanitize_text_field($_POST['group_purchase_time_limit']));
-	}
+	require_once plugin_dir_path(__FILE__) . 'includes/class-woocommerce-group-purchase-deactivator.php';
+	Woocommerce_Group_Purchase_Deactivator::deactivate();
 }
+
+register_activation_hook(__FILE__, 'activate_woocommerce_group_purchase');
+register_deactivation_hook(__FILE__, 'deactivate_woocommerce_group_purchase');
 
 /**
- * عرض سعر الخصم ومعلومات المجموعة في صفحة المنتج
+ * The core plugin class that is used to define internationalization,
+ * admin-specific hooks, and public-facing site hooks.
  */
-add_action('woocommerce_single_product_summary', 'display_group_purchase_info', 25);
-function display_group_purchase_info()
-{
-	global $product;
+require plugin_dir_path(__FILE__) . 'includes/class-woocommerce-group-purchase.php';
 
-	// التحقق من تمكين شراء المجموعة
-	$enable_group_purchase = get_post_meta($product->get_id(), 'enable_group_purchase', true);
-	if ($enable_group_purchase === 'yes') {
-		$group_size = get_post_meta($product->get_id(), 'group_purchase_size', true);
-		$group_discount = get_post_meta($product->get_id(), 'group_purchase_discount', true);
 
-		if ($group_discount && $group_discount > 0) {
-			// حساب السعر بعد الخصم
-			$original_price = $product->get_price();
-			$discounted_price = $original_price - $group_discount;
+// إضافة ملف إعدادات شراء المجموعة
+require_once plugin_dir_path(__FILE__) . 'includes/group-purchase-settings.php';
 
-			// التأكد من أن السعر المخفض لا يصبح سالباً
-			if ($discounted_price < 0) {
-				$discounted_price = 0;
-			}
-
-			// عرض السعر الجديد بعد الخصم
-			echo '<p>' . __('سعر المجموعة: ') . wc_price($discounted_price) . '</p>';
-		}
-
-		// عرض معلومات المجموعة
-		echo '<p>' . __('هذا المنتج متاح للشراء كمجموعة.') . '</p>';
-		echo '<p>' . __('عدد الأشخاص المطلوبين لإكمال المجموعة: ') . $group_size . '</p>';
-
-		// هنا يمكنك إضافة كود لعرض عدد الأشخاص المتبقيين
-		$current_buyers = 0; // هذا يمكن تحديثه بناءً على حالة الطلبات
-		$remaining_people = $group_size - $current_buyers;
-
-		if ($remaining_people > 0) {
-			echo '<p>' . __('عدد الأشخاص المتبقين لإكمال المجموعة: ') . $remaining_people . '</p>';
-		} else {
-			echo '<p>' . __('المجموعة مكتملة! يمكنك الآن شراء المنتج بالسعر المخفض.') . '</p>';
-		}
-	}
-}
 
 /**
- * تطبيق خصم المجموعة في سلة التسوق
+ * Begins execution of the plugin.
+ *
+ * Since everything within the plugin is registered via hooks,
+ * then kicking off the plugin from this point in the file does
+ * not affect the page life cycle.
+ *
+ * @since    1.0.0
  */
-add_action('woocommerce_before_calculate_totals', 'apply_group_purchase_discount');
-function apply_group_purchase_discount($cart)
+function run_woocommerce_group_purchase()
 {
-	if (is_admin() && !defined('DOING_AJAX')) {
-		return;
-	}
 
-	// المرور عبر المنتجات في السلة
-	foreach ($cart->get_cart() as $cart_item) {
-		$product_id = $cart_item['product_id'];
-
-		// التحقق من تمكين شراء المجموعة
-		$enable_group_purchase = get_post_meta($product_id, 'enable_group_purchase', true);
-		if ($enable_group_purchase === 'yes') {
-			$group_discount = get_post_meta($product_id, 'group_purchase_discount', true);
-
-			// حساب الخصم وتطبيقه
-			if ($group_discount && $group_discount > 0) {
-				$original_price = $cart_item['data']->get_price();
-				$new_price = $original_price - $group_discount;
-
-				// التأكد من أن السعر الجديد لا يصبح سالباً
-				if ($new_price < 0) {
-					$new_price = 0;
-				}
-
-				// تعيين السعر الجديد
-				$cart_item['data']->set_price($new_price);
-			}
-		}
-	}
+	$plugin = new Woocommerce_Group_Purchase();
+	$plugin->run();
 }
+run_woocommerce_group_purchase();
